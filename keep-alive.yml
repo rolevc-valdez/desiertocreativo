@@ -1,0 +1,28 @@
+name: Supabase keep-alive
+
+on:
+  schedule:
+    # Corre cada 3 días a las 8:00 AM UTC (margen de sobra antes de los 7 días de inactividad)
+    - cron: "0 8 */3 * *"
+  workflow_dispatch:
+    # Permite correrlo manualmente desde la pestaña "Actions" de GitHub si quieres probarlo
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping tabla keep_alive en Supabase
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://${{ secrets.SUPABASE_PROJECT_ID }}.supabase.co/rest/v1/keep_alive?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+
+          echo "Respuesta de Supabase: $response"
+
+          if [ "$response" -ne 200 ]; then
+            echo "⚠️ El ping falló (código $response). Revisa el proyecto en Supabase."
+            exit 1
+          fi
+
+          echo "✅ Ping exitoso. Proyecto sigue activo."
