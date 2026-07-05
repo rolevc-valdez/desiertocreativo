@@ -406,13 +406,14 @@ ul { list-style: none; margin: 0; padding: 0; }
 /* Ecualizador de audio */
 .hero-equalizer {
   position: absolute;
-  bottom: 32%;
-  right: 22%;
-  width: 120px;
-  height: 48px;
+  bottom: 28%;
+  right: 36%;
+  width: 200px;
+  height: 80px;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.75;
+  opacity: 0.82;
+  mix-blend-mode: screen;
 }
 .hero-equalizer svg {
   width: 100%;
