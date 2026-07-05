@@ -69,23 +69,30 @@ ul { list-style: none; margin: 0; padding: 0; }
 .header-inner {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 10px 24px;
+  padding: 8px 24px 8px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .brand-logo {
-  height: 140px;
+  height: 130px;
   width: auto;
-  max-width: 460px;
+  max-width: 500px;
   display: block;
+  margin-left: 0;
 }
 @media (max-width: 780px) {
-  .brand-logo { height: 100px; max-width: 340px; }
+  .brand-logo { height: 90px; max-width: 340px; }
 }
 @media (max-width: 480px) {
-  .brand-logo { height: 76px; max-width: 260px; }
+  .brand-logo { height: 68px; max-width: 260px; }
 }
 
 .nav-desktop {
