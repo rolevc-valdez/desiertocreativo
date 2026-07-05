@@ -350,7 +350,81 @@ ul { list-style: none; margin: 0; padding: 0; }
 }
 .section-intro { margin-bottom: 56px; }
 
-/* reveal-on-scroll */
+/* =========================================================
+   Hero — efectos animados
+   ========================================================= */
+
+/* Canvas de partículas */
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Destellos de luz */
+.hero-glows {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0;
+  animation: glowPulse var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+.glow-1 {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(63,130,136,0.35), transparent 70%);
+  top: 10%; right: 25%;
+  --dur: 5s; --delay: 0s;
+}
+.glow-2 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(201,168,76,0.28), transparent 70%);
+  top: 30%; right: 8%;
+  --dur: 4s; --delay: 1.8s;
+}
+.glow-3 {
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(63,130,136,0.22), transparent 70%);
+  bottom: 20%; right: 35%;
+  --dur: 6s; --delay: 3s;
+}
+@keyframes glowPulse {
+  0%   { opacity: 0;    transform: scale(0.85); }
+  40%  { opacity: 1;    transform: scale(1.05); }
+  70%  { opacity: 0.6;  transform: scale(1);    }
+  100% { opacity: 0;    transform: scale(0.85); }
+}
+
+/* Ecualizador de audio */
+.hero-equalizer {
+  position: absolute;
+  bottom: 32%;
+  right: 22%;
+  width: 120px;
+  height: 48px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.75;
+}
+.hero-equalizer svg {
+  width: 100%;
+  height: 100%;
+}
+@media (max-width: 900px) {
+  .hero-equalizer { display: none; }
+}
+
+/* =========================================================
+   Hero — fin efectos animados
+   ========================================================= */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
