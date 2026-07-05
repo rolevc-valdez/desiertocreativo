@@ -620,9 +620,38 @@ ul { list-style: none; margin: 0; padding: 0; }
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 11px;
-  color: var(--teal);
+  color: #ffffff;
   display: block;
   margin-bottom: 6px;
+  text-shadow:
+    0 0 8px rgba(63,130,136,0.9),
+    0 1px 3px rgba(0,0,0,0.9);
+}
+/* Tarjeta como enlace */
+a.portfolio-card {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+a.portfolio-card::after {
+  content: "↗";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 13px;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+  background: rgba(0,0,0,0.5);
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-family: var(--font-caps);
+  letter-spacing: 0.08em;
+}
+a.portfolio-card:hover::after {
+  opacity: 1;
 }
 .portfolio-name {
   font-family: var(--font-display);
