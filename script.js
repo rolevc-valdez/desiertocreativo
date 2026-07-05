@@ -42,7 +42,7 @@ navMobile.querySelectorAll('a').forEach(link => {
 // como espacio reservado ("Proximamente").
 
 const portfolioItems = [
-  { category: "Podcast",             name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true },
+  { category: "Podcast", name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true, url: "https://rolevaldez.com/episodios" },
   { category: "Video promocional",   name: "Próximamente", image: null },
   { category: "Comercial",           name: "Próximamente", image: null },
   { category: "Cobertura de evento", name: "Próximamente", image: null },
@@ -53,8 +53,14 @@ const portfolioItems = [
 const grid = document.getElementById('portfolioGrid');
 
 portfolioItems.forEach(item => {
-  const card = document.createElement('div');
+  const isLink = item.url ? true : false;
+  const card = document.createElement(isLink ? 'a' : 'div');
   card.className = 'portfolio-card' + (item.image ? '' : ' placeholder') + (item.animated ? ' portfolio-animated' : '');
+  if (isLink) {
+    card.href   = item.url;
+    card.target = '_blank';
+    card.rel    = 'noopener';
+  }
 
   card.innerHTML = `
     ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
