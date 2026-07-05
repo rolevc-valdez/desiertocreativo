@@ -69,7 +69,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .header-inner {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 8px 24px 8px 12px;
+  padding: 6px 24px 6px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -82,17 +82,17 @@ ul { list-style: none; margin: 0; padding: 0; }
 }
 
 .brand-logo {
-  height: 130px;
+  height: 221px;
   width: auto;
-  max-width: 500px;
+  max-width: 680px;
   display: block;
   margin-left: 0;
 }
 @media (max-width: 780px) {
-  .brand-logo { height: 90px; max-width: 340px; }
+  .brand-logo { height: 150px; max-width: 480px; }
 }
 @media (max-width: 480px) {
-  .brand-logo { height: 68px; max-width: 260px; }
+  .brand-logo { height: 110px; max-width: 320px; }
 }
 
 .nav-desktop {
@@ -161,7 +161,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 220px 24px 80px;
+  padding: 280px 24px 80px;
   overflow: hidden;
 }
 
@@ -527,5 +527,16 @@ ul { list-style: none; margin: 0; padding: 0; }
   font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--ink-dim);
-  margin: 0;
+  margin: 0 0 4px;
+}
+.footer-credit {
+  margin-bottom: 6px !important;
+}
+.footer-credit a {
+  color: var(--teal);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-credit a:hover {
+  color: var(--ink);
 }
