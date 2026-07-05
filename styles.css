@@ -830,3 +830,69 @@ ul { list-style: none; margin: 0; padding: 0; }
   .hero-glows { display: none; }
   .lamp-flicker { display: none; }
 }
+
+/* =========================================================
+   Tarjeta Podcast — efectos animados
+   ========================================================= */
+.portfolio-animated {
+  overflow: hidden;
+}
+.portfolio-animated img {
+  opacity: 0.82;
+  transition: opacity 0.4s ease, transform 0.5s ease;
+}
+.portfolio-animated:hover img {
+  opacity: 1;
+  transform: scale(1.03);
+}
+
+/* Canvas de efectos */
+.pod-effects {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.pod-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Indicador REC */
+.pod-rec {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #fff;
+  background: rgba(0,0,0,0.55);
+  padding: 4px 10px 4px 8px;
+  border-radius: 2px;
+  backdrop-filter: blur(4px);
+}
+.pod-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e03030;
+  box-shadow: 0 0 6px rgba(220,40,40,0.8);
+  animation: recBlink 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes recBlink {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px rgba(220,40,40,0.8); }
+  50%       { opacity: 0.2; box-shadow: 0 0 2px rgba(220,40,40,0.2); }
+}
+
+/* Asegurar que el meta quede sobre el canvas */
+.portfolio-animated .portfolio-meta {
+  position: relative;
+  z-index: 2;
+}
