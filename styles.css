@@ -721,15 +721,17 @@ ul { list-style: none; margin: 0; padding: 0; }
   /* Hero: reducir padding top por el logo */
   .hero {
     padding: 200px 20px 60px;
-    background-position: 70% center;
+    /* En móvil centramos en el equipo (zona derecha-centro de la imagen) */
+    background-position: 65% center;
   }
-  /* En móvil el overlay oscurece más para legibilidad */
+  /* En móvil el overlay oscurece más para legibilidad del texto */
   .hero::after {
     background: linear-gradient(
-      to right,
-      rgba(10,10,10,0.92) 0%,
-      rgba(10,10,10,0.80) 50%,
-      rgba(10,10,10,0.50) 100%
+      to bottom,
+      rgba(10,10,10,0.75) 0%,
+      rgba(10,10,10,0.45) 40%,
+      rgba(10,10,10,0.55) 70%,
+      rgba(10,10,10,0.85) 100%
     );
   }
   .hero-lede { font-size: 16px; }
@@ -774,7 +776,22 @@ ul { list-style: none; margin: 0; padding: 0; }
   /* Hero */
   .hero {
     padding: 170px 16px 50px;
-    min-height: 100svh; /* safe viewport height en iOS */
+    min-height: 100svh;
+    /* En móvil pequeño centramos exactamente en el monitor+cámara */
+    background-position: 68% 40%;
+    background-size: 180%; /* zoom para que el equipo llene más la pantalla */
+  }
+  /* Overlay más claro abajo para ver el equipo, más oscuro arriba para el texto */
+  .hero::after {
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(10,10,10,0.88) 0%,
+        rgba(10,10,10,0.60) 30%,
+        rgba(10,10,10,0.35) 55%,
+        rgba(10,10,10,0.65) 85%,
+        rgba(10,10,10,0.90) 100%
+      );
   }
   .hero-title { font-size: clamp(2rem, 9vw, 2.8rem); }
   .hero-lede { font-size: 15px; max-width: 100%; }
