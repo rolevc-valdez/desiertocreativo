@@ -120,51 +120,152 @@ portfolioItems.forEach(item => {
 })();
 
 // =========================================================
-// ECUALIZADOR DE AUDIO ANIMADO
+// LÍNEAS DE CONTORNO BRILLANTES (monitor, micrófono, cámara, audífonos)
 // =========================================================
-(function initEqualizer() {
-  var svg = document.getElementById('eqBars');
-  if (!svg) return;
+(function initOutlineLines() {
+  var canvas = document.getElementById('heroLines');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
 
-  var BAR_COUNT = 28;
-  var BAR_W     = 5;
-  var GAP       = 2;
-  var MAX_H     = 78;
-  var colors    = ['#3f8288', '#c9a84c', '#5ba8ae', '#e8c060', '#3f8288', '#c9a84c'];
-  var totalW    = BAR_COUNT * (BAR_W + GAP) - GAP;
+  function resize() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
 
-  svg.closest('svg').setAttribute('viewBox', '0 0 ' + totalW + ' ' + MAX_H);
+  // Contornos definidos como porcentajes del canvas (x%, y%)
+  // Ajustados a la imagen: monitor centro-derecha, micrófono centro,
+  // cámara derecha, audífonos abajo-centro
+  function pct(x, y) {
+    return [canvas.width * x, canvas.height * y];
+  }
 
-  var bars = Array.from({ length: BAR_COUNT }, function(_, i) {
-    var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    rect.setAttribute('x', i * (BAR_W + GAP));
-    rect.setAttribute('width', BAR_W);
-    rect.setAttribute('rx', '1');
-    rect.setAttribute('fill', colors[i % colors.length]);
-    svg.appendChild(rect);
+  // Cada objeto es un array de puntos que forman el contorno
+  function getShapes() {
+    return [
+      // Monitor (rectángulo aproximado)
+      {
+        pts: [
+          pct(0.50, 0.28), pct(0.72, 0.28),
+          pct(0.72, 0.62), pct(0.50, 0.62),
+          pct(0.50, 0.28),
+        ],
+        color: '#ffffff',
+        glowColor: 'rgba(180,230,255,0.8)',
+      },
+      // Cámara (contorno aproximado)
+      {
+        pts: [
+          pct(0.74, 0.30), pct(0.92, 0.30),
+          pct(0.92, 0.72), pct(0.74, 0.72),
+          pct(0.74, 0.30),
+        ],
+        color: '#c9a84c',
+        glowColor: 'rgba(201,168,76,0.7)',
+      },
+      // Micrófono (línea vertical central)
+      {
+        pts: [
+          pct(0.58, 0.45), pct(0.60, 0.45),
+          pct(0.60, 0.88), pct(0.58, 0.88),
+        ],
+        color: '#ffffff',
+        glowColor: 'rgba(255,255,255,0.6)',
+      },
+      // Audífonos (arco inferior)
+      {
+        pts: [
+          pct(0.52, 0.82), pct(0.56, 0.78),
+          pct(0.60, 0.80), pct(0.64, 0.76),
+          pct(0.68, 0.82),
+        ],
+        color: '#3f8288',
+        glowColor: 'rgba(63,130,136,0.8)',
+      },
+    ];
+  }
+
+  // Cada línea tiene una partícula que recorre el contorno
+  var lines = getShapes().map(function(shape, i) {
     return {
-      el:      rect,
-      current: Math.random() * 20 + 4,
-      target:  Math.random() * MAX_H,
-      speed:   Math.random() * 2.5 + 1,
+      shape:    shape,
+      progress: Math.random(), // posición inicial aleatoria
+      speed:    0.0015 + Math.random() * 0.002,
+      tail:     0.18 + Math.random() * 0.12, // longitud de la estela
+      active:   true,
+      waitFrames: Math.floor(Math.random() * 120), // pausa inicial
     };
   });
 
-  function animEq() {
-    bars.forEach(function(b) {
-      if (Math.random() < 0.04) {
-        b.target = Math.random() * MAX_H * 0.9 + MAX_H * 0.05;
-        b.speed  = Math.random() * 3 + 1;
-      }
-      b.current += (b.target - b.current) * 0.08 * b.speed;
-      var h = Math.max(2, b.current);
-      b.el.setAttribute('height', h);
-      b.el.setAttribute('y', MAX_H - h);
-      b.el.setAttribute('opacity', 0.55 + (h / MAX_H) * 0.45);
-    });
-    requestAnimationFrame(animEq);
+  // Interpolar un punto en el contorno dado un progreso 0-1
+  function getPointOnPath(pts, t) {
+    var total = pts.length - 1;
+    var seg   = t * total;
+    var i     = Math.floor(seg);
+    var f     = seg - i;
+    if (i >= total) i = total - 1;
+    var a = pts[i], b = pts[i + 1] || pts[i];
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
   }
-  animEq();
+
+  function drawLines() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    lines.forEach(function(line) {
+      if (line.waitFrames > 0) { line.waitFrames--; return; }
+
+      var pts   = line.shape.pts;
+      var color = line.shape.color;
+      var glow  = line.shape.glowColor;
+
+      // Avanzar la partícula
+      line.progress += line.speed;
+      if (line.progress > 1) line.progress -= 1;
+
+      var p    = line.progress;
+      var tail = line.tail;
+
+      // Dibujar estela: segmentos desde p-tail hasta p
+      var steps = 40;
+      for (var s = 0; s <= steps; s++) {
+        var t0 = p - tail + (tail / steps) * s;
+        if (t0 < 0) t0 += 1;
+        var t1 = p - tail + (tail / steps) * (s + 1);
+        if (t1 < 0) t1 += 1;
+
+        var pt0 = getPointOnPath(pts, t0);
+        var pt1 = getPointOnPath(pts, t1);
+
+        // Opacidad: crece hacia la punta
+        var alpha = (s / steps);
+        alpha = alpha * alpha; // curva cuadrática más natural
+
+        ctx.beginPath();
+        ctx.moveTo(pt0[0], pt0[1]);
+        ctx.lineTo(pt1[0], pt1[1]);
+
+        // Línea exterior con glow
+        ctx.shadowColor  = glow;
+        ctx.shadowBlur   = 12;
+        ctx.strokeStyle  = color;
+        ctx.globalAlpha  = alpha * 0.9;
+        ctx.lineWidth    = 1.5;
+        ctx.lineCap      = 'round';
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur  = 0;
+    });
+
+    requestAnimationFrame(drawLines);
+  }
+
+  window.addEventListener('resize', function() {
+    resize();
+  });
+
+  drawLines();
 })();
 
 // =========================================================
