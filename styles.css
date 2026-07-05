@@ -417,6 +417,45 @@ ul { list-style: none; margin: 0; padding: 0; }
 /* =========================================================
    Hero — fin efectos animados
    ========================================================= */
+/* =========================================================
+   Sección Nosotros — fondo imagen difuminada
+   ========================================================= */
+.section#nosotros {
+  position: relative;
+  overflow: hidden;
+}
+.section#nosotros::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('assets/bg-nosotros.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.12;
+  filter: blur(3px) saturate(0.7);
+  transform: scale(1.05);
+  z-index: 0;
+}
+.section#nosotros::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    transparent 25%,
+    rgba(10,10,10,0.55) 65%,
+    rgba(10,10,10,0.97) 100%
+  );
+  z-index: 0;
+}
+.section#nosotros .section-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   Reveal on scroll
+   ========================================================= */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
