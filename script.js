@@ -42,7 +42,7 @@ navMobile.querySelectorAll('a').forEach(link => {
 // como espacio reservado ("Proximamente").
 
 const portfolioItems = [
-  { category: "Podcast",             name: "Próximamente", image: null },
+  { category: "Podcast",             name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true },
   { category: "Video promocional",   name: "Próximamente", image: null },
   { category: "Comercial",           name: "Próximamente", image: null },
   { category: "Cobertura de evento", name: "Próximamente", image: null },
@@ -54,10 +54,15 @@ const grid = document.getElementById('portfolioGrid');
 
 portfolioItems.forEach(item => {
   const card = document.createElement('div');
-  card.className = 'portfolio-card' + (item.image ? '' : ' placeholder');
+  card.className = 'portfolio-card' + (item.image ? '' : ' placeholder') + (item.animated ? ' portfolio-animated' : '');
 
   card.innerHTML = `
     ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
+    ${item.animated ? `
+    <div class="pod-effects" aria-hidden="true">
+      <canvas class="pod-canvas"></canvas>
+      <span class="pod-rec"><span class="pod-dot"></span>REC</span>
+    </div>` : ''}
     <div class="portfolio-meta">
       <span class="portfolio-cat">${item.category}</span>
       <span class="portfolio-name">${item.name}</span>
@@ -311,3 +316,137 @@ if ('IntersectionObserver' in window) {
   // Navegador sin soporte de IntersectionObserver: mostrar todo directo
   revealTargets.forEach(el => el.classList.add('in'));
 }
+
+// =========================================================
+// ANIMACIONES TARJETA PODCAST (ondas, REC, partículas, glow)
+// =========================================================
+(function initPodcastCard() {
+  var card = document.querySelector('.portfolio-animated');
+  if (!card) return;
+  var canvas = card.querySelector('.pod-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var cx, cy;
+  function center() {
+    cx = canvas.width  * 0.5;
+    cy = canvas.height * 0.38; // un poco arriba del centro (zona de la cabeza)
+  }
+  center();
+  window.addEventListener('resize', center);
+
+  // -- Ondas de audio que pulsan --
+  var waves = Array.from({ length: 5 }, function(_, i) {
+    return {
+      r:     60 + i * 28,
+      alpha: 0,
+      phase: i * (Math.PI * 2 / 5),
+      speed: 0.018 + i * 0.004,
+    };
+  });
+
+  // -- Partículas flotantes alrededor --
+  var particles = Array.from({ length: 30 }, function() {
+    var angle = Math.random() * Math.PI * 2;
+    var dist  = 55 + Math.random() * 110;
+    return {
+      angle:  angle,
+      dist:   dist,
+      size:   Math.random() * 2 + 0.8,
+      speed:  (Math.random() - 0.5) * 0.008,
+      alpha:  Math.random() * 0.6 + 0.1,
+      fade:   Math.random() * 0.012 + 0.004,
+      dir:    1,
+      color:  Math.random() > 0.5 ? '63,130,136' : '201,168,76',
+    };
+  });
+
+  // -- Líneas de sonido (ecualizador lateral) --
+  var bars = Array.from({ length: 12 }, function(_, i) {
+    return {
+      h:      Math.random() * 18 + 4,
+      target: Math.random() * 22 + 2,
+      speed:  Math.random() * 0.12 + 0.04,
+    };
+  });
+
+  var t = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t += 0.016;
+
+    // Glow central suave
+    var grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 140);
+    grd.addColorStop(0, 'rgba(63,130,136,0.08)');
+    grd.addColorStop(1, 'rgba(63,130,136,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Ondas de audio
+    waves.forEach(function(w) {
+      w.phase += w.speed;
+      var pulse = Math.sin(w.phase) * 0.5 + 0.5;
+      var alpha = pulse * 0.35;
+      var r     = w.r + Math.sin(w.phase * 0.7) * 8;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(63,130,136,' + alpha.toFixed(2) + ')';
+      ctx.lineWidth   = 1.2;
+      ctx.shadowColor = '#3f8288';
+      ctx.shadowBlur  = 8;
+      ctx.stroke();
+      ctx.shadowBlur  = 0;
+    });
+
+    // Partículas
+    particles.forEach(function(p) {
+      p.angle += p.speed;
+      p.alpha += p.fade * p.dir;
+      if (p.alpha > 0.75 || p.alpha < 0.05) p.dir *= -1;
+
+      var x = cx + Math.cos(p.angle) * p.dist;
+      var y = cy + Math.sin(p.angle) * p.dist * 0.6; // elipse vertical
+      ctx.beginPath();
+      ctx.arc(x, y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + p.color + ',' + p.alpha.toFixed(2) + ')';
+      ctx.fill();
+    });
+
+    // Barras de sonido — lado izquierdo de la tarjeta
+    var barW  = 3;
+    var barGap = 5;
+    var startX = 14;
+    var baseY  = canvas.height * 0.72;
+    bars.forEach(function(b, i) {
+      b.h += (b.target - b.h) * b.speed;
+      if (Math.random() < 0.03) b.target = Math.random() * 22 + 2;
+
+      var pulse = Math.sin(t * 2 + i * 0.5) * 3;
+      var h     = Math.max(3, b.h + pulse);
+      var alpha = 0.45 + (h / 28) * 0.5;
+
+      ctx.fillStyle = 'rgba(63,130,136,' + alpha.toFixed(2) + ')';
+      ctx.shadowColor = '#3f8288';
+      ctx.shadowBlur  = 4;
+      ctx.beginPath();
+      ctx.roundRect
+        ? ctx.roundRect(startX + i * (barW + barGap), baseY - h, barW, h, 1)
+        : ctx.rect(startX + i * (barW + barGap), baseY - h, barW, h);
+      ctx.fill();
+    });
+    ctx.shadowBlur = 0;
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
