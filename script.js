@@ -84,7 +84,7 @@ portfolioItems.forEach(item => {
   window.addEventListener('resize', resize);
 
   const COLORS = ['rgba(63,130,136,', 'rgba(201,168,76,', 'rgba(245,243,238,'];
-  const COUNT  = 55;
+  const COUNT  = 110;
 
   const particles = Array.from({ length: COUNT }, () => ({
     x:     Math.random() * canvas.width,
@@ -126,11 +126,11 @@ portfolioItems.forEach(item => {
   var svg = document.getElementById('eqBars');
   if (!svg) return;
 
-  var BAR_COUNT = 18;
-  var BAR_W     = 4;
-  var GAP       = 2.5;
-  var MAX_H     = 46;
-  var colors    = ['#3f8288', '#c9a84c', '#3f8288'];
+  var BAR_COUNT = 28;
+  var BAR_W     = 5;
+  var GAP       = 2;
+  var MAX_H     = 78;
+  var colors    = ['#3f8288', '#c9a84c', '#5ba8ae', '#e8c060', '#3f8288', '#c9a84c'];
   var totalW    = BAR_COUNT * (BAR_W + GAP) - GAP;
 
   svg.closest('svg').setAttribute('viewBox', '0 0 ' + totalW + ' ' + MAX_H);
