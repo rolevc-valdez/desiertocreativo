@@ -467,7 +467,56 @@ ul { list-style: none; margin: 0; padding: 0; }
 .no-js .reveal { opacity: 1; transform: none; }
 
 /* =========================================================
-   Servicios
+   Sección Servicios — fondo imagen del estudio
+   ========================================================= */
+.section#servicios {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-alt);
+}
+.section#servicios::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('assets/bg-servicios.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.14;
+  filter: blur(1px) saturate(0.8);
+  transform: scale(1.04);
+  z-index: 0;
+}
+/* Difuminado en los 4 bordes con degradados hacia el fondo */
+.section#servicios::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom,
+      rgba(17,17,17,0.98) 0%,
+      rgba(17,17,17,0.3) 15%,
+      transparent 35%,
+      transparent 65%,
+      rgba(17,17,17,0.3) 85%,
+      rgba(17,17,17,0.98) 100%
+    ),
+    linear-gradient(to right,
+      rgba(17,17,17,0.95) 0%,
+      rgba(17,17,17,0.2) 12%,
+      transparent 30%,
+      transparent 70%,
+      rgba(17,17,17,0.2) 88%,
+      rgba(17,17,17,0.95) 100%
+    );
+  z-index: 0;
+}
+.section#servicios .section-inner {
+  position: relative;
+  z-index: 1;
+}
+
+
    ========================================================= */
 .service-grid {
   display: grid;
@@ -661,4 +710,106 @@ ul { list-style: none; margin: 0; padding: 0; }
 }
 .footer-credit a:hover {
   color: var(--ink);
+}
+
+/* =========================================================
+   RESPONSIVE — Ajustes móvil completos
+   ========================================================= */
+
+/* Tablet y móvil grande */
+@media (max-width: 768px) {
+  /* Hero: reducir padding top por el logo */
+  .hero {
+    padding: 200px 20px 60px;
+    background-position: 70% center;
+  }
+  /* En móvil el overlay oscurece más para legibilidad */
+  .hero::after {
+    background: linear-gradient(
+      to right,
+      rgba(10,10,10,0.92) 0%,
+      rgba(10,10,10,0.80) 50%,
+      rgba(10,10,10,0.50) 100%
+    );
+  }
+  .hero-lede { font-size: 16px; }
+
+  /* Secciones: menos padding */
+  .section { padding: 80px 20px; }
+
+  /* Sección nosotros: imagen de fondo centrada en móvil */
+  .section#nosotros::before {
+    background-position: center center;
+    opacity: 0.10;
+  }
+
+  /* Servicios: imagen centrada */
+  .section#servicios::before {
+    background-position: center center;
+    opacity: 0.12;
+  }
+
+  /* Contacto */
+  .contact-value { font-size: 16px; }
+  .contact-link {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    padding: 16px 0;
+  }
+  .contact-link:hover { padding-left: 6px; }
+
+  /* Footer */
+  .footer-social { gap: 18px; }
+}
+
+/* Móvil pequeño */
+@media (max-width: 480px) {
+  /* Logo: asegurar que no desborde */
+  .brand-logo {
+    height: 80px;
+    max-width: 280px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 170px 16px 50px;
+    min-height: 100svh; /* safe viewport height en iOS */
+  }
+  .hero-title { font-size: clamp(2rem, 9vw, 2.8rem); }
+  .hero-lede { font-size: 15px; max-width: 100%; }
+  .hero-actions { flex-direction: column; gap: 12px; }
+  .btn { text-align: center; width: 100%; max-width: 280px; }
+
+  /* Secciones */
+  .section { padding: 64px 16px; }
+  .section-title { font-size: clamp(1.6rem, 7vw, 2rem); }
+  .body-text { font-size: 15px; }
+  .body-text.emphasis { font-size: 17px; }
+
+  /* Servicios: grid de 1 columna ya definido, solo ajustar gap */
+  .service-grid { gap: 28px 0; }
+  .service-item { padding-top: 20px; }
+  .service-item h3 { font-size: 18px; }
+
+  /* Portafolio: 1 columna en móvil */
+  .portfolio-grid { grid-template-columns: 1fr; }
+  .portfolio-card { aspect-ratio: 16 / 9; min-height: 200px; }
+
+  /* Nosotros fondo invisible en móvil muy pequeño para performance */
+  .section#nosotros::before { opacity: 0.08; }
+
+  /* Footer */
+  .footer-social {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .footer-logo { height: 32px; }
+}
+
+/* Asegurar que partículas no desborden en móvil */
+@media (max-width: 600px) {
+  .hero-glows { display: none; }
+  .lamp-flicker { display: none; }
 }
