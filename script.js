@@ -46,7 +46,7 @@ const portfolioItems = [
   { category: "Video promocional",   name: "Rinconcito del Sabor", image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ", effect: "promo" },
   { category: "Comercial",           name: "Block Master", image: "assets/portfolio/port-003.jpg", url: "https://www.youtube.com/watch?v=eDh1deXEFLM", effect: "comercial" },
   { category: "Cobertura de evento", name: "Próximamente", image: null },
-  { category: "Identidad de marca",  name: "Próximamente", image: null },
+  { category: "Identidad de marca",  name: "D'Kachuchas", image: "assets/portfolio/port-004.jpg", url: "https://www.youtube.com/watch?v=2_4UBIXYl-M", effect: "branding" },
   { category: "Fotografía",          name: "Próximamente", image: null },
 ];
 
@@ -691,4 +691,149 @@ if ('IntersectionObserver' in window) {
     requestAnimationFrame(drawComercial);
   }
   drawComercial();
+})();
+
+// =========================================================
+// EFECTOS — IDENTIDAD DE MARCA (orbe orbital + sello)
+// =========================================================
+(function initBrandingEffect() {
+  var canvas = document.querySelector('.fx-branding');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var card = canvas.closest('.portfolio-card');
+
+  function resize() {
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Orbe que orbita la tarjeta siguiendo el perímetro
+  var orbs = [
+    { pos: 0,      speed: 0.6, size: 5, color: '201,168,76', tail: 80 },
+    { pos: 0.5,    speed: 0.4, size: 3, color: '255,220,120', tail: 50 },
+    { pos: 0.75,   speed: 0.9, size: 2.5, color: '63,130,136', tail: 40 },
+  ];
+
+  // Estrellas de destello en esquinas — efecto "sello aprobado"
+  var sparkles = Array.from({ length: 16 }, function(_, i) {
+    var angle = (i / 16) * Math.PI * 2;
+    var r = 28 + Math.random() * 18;
+    return {
+      // Posición fija en esquina superior derecha
+      baseX: canvas.width  * 0.82,
+      baseY: canvas.height * 0.12,
+      angle: angle,
+      r:     r,
+      size:  Math.random() * 1.8 + 0.5,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.03 + Math.random() * 0.02,
+      color: Math.random() > 0.5 ? '201,168,76' : '255,235,150',
+    };
+  });
+
+  // Círculo de sello (aparece y desaparece)
+  var seal = { alpha: 0, dir: 1, phase: 0 };
+
+  function perimToXY(pos, W, H) {
+    var perim = W * 2 + H * 2;
+    var p = ((pos * perim) % perim + perim) % perim;
+    if (p < W)      return [p, 0];
+    p -= W;
+    if (p < H)      return [W, p];
+    p -= H;
+    if (p < W)      return [W - p, H];
+    p -= W;
+    return [0, H - p];
+  }
+
+  var t = 0;
+  function drawBranding() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t++;
+    var W = canvas.width, H = canvas.height;
+
+    // Actualizar posición de sparkles
+    sparkles.forEach(function(s) {
+      s.baseX = W * 0.82;
+      s.baseY = H * 0.12;
+    });
+
+    // -- Orbes orbitales --
+    orbs.forEach(function(orb) {
+      orb.pos += orb.speed / (W * 2 + H * 2) * 3;
+      if (orb.pos > 1) orb.pos -= 1;
+
+      var steps = 30;
+      for (var s = 0; s <= steps; s++) {
+        var tA = orb.pos - (orb.tail / (W*2+H*2)) + (orb.tail / (W*2+H*2) / steps) * s;
+        var tB = orb.pos - (orb.tail / (W*2+H*2)) + (orb.tail / (W*2+H*2) / steps) * (s + 1);
+        var ptA = perimToXY(tA, W, H);
+        var ptB = perimToXY(tB, W, H);
+        var alpha = Math.pow(s / steps, 1.5) * 0.85;
+
+        ctx.beginPath();
+        ctx.moveTo(ptA[0], ptA[1]);
+        ctx.lineTo(ptB[0], ptB[1]);
+        ctx.strokeStyle = 'rgba(' + orb.color + ',' + alpha.toFixed(2) + ')';
+        ctx.lineWidth   = orb.size * (s / steps);
+        ctx.shadowColor = 'rgba(' + orb.color + ',0.6)';
+        ctx.shadowBlur  = 12;
+        ctx.stroke();
+      }
+      ctx.shadowBlur = 0;
+
+      // Punto brillante en la punta
+      var tip = perimToXY(orb.pos, W, H);
+      ctx.beginPath();
+      ctx.arc(tip[0], tip[1], orb.size, 0, Math.PI * 2);
+      ctx.fillStyle   = 'rgba(' + orb.color + ',1)';
+      ctx.shadowColor = 'rgba(' + orb.color + ',0.9)';
+      ctx.shadowBlur  = 15;
+      ctx.fill();
+      ctx.shadowBlur  = 0;
+    });
+
+    // -- Sello circular pulsante --
+    seal.phase += 0.018;
+    seal.alpha = (Math.sin(seal.phase) * 0.5 + 0.5) * 0.55;
+    var sx = W * 0.82, sy = H * 0.12, sr = 32;
+
+    ctx.beginPath();
+    ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(201,168,76,' + seal.alpha.toFixed(2) + ')';
+    ctx.lineWidth   = 1;
+    ctx.shadowColor = 'rgba(201,168,76,0.6)';
+    ctx.shadowBlur  = 8;
+    ctx.stroke();
+    ctx.shadowBlur  = 0;
+
+    // Círculo interior más pequeño
+    ctx.beginPath();
+    ctx.arc(sx, sy, sr * 0.7, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(201,168,76,' + (seal.alpha * 0.6).toFixed(2) + ')';
+    ctx.lineWidth   = 0.5;
+    ctx.stroke();
+
+    // -- Destellos de estrellas alrededor del sello --
+    sparkles.forEach(function(s) {
+      s.phase += s.speed;
+      var pulse = Math.sin(s.phase) * 0.5 + 0.5;
+      var x = s.baseX + Math.cos(s.angle) * s.r;
+      var y = s.baseY + Math.sin(s.angle) * s.r;
+      var alpha = pulse * 0.6 * seal.alpha * 2;
+
+      ctx.beginPath();
+      ctx.arc(x, y, s.size * pulse, 0, Math.PI * 2);
+      ctx.fillStyle   = 'rgba(' + s.color + ',' + Math.min(alpha, 0.7).toFixed(2) + ')';
+      ctx.shadowColor = 'rgba(201,168,76,0.5)';
+      ctx.shadowBlur  = 4;
+      ctx.fill();
+      ctx.shadowBlur  = 0;
+    });
+
+    requestAnimationFrame(drawBranding);
+  }
+  drawBranding();
 })();
