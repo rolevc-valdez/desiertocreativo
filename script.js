@@ -43,8 +43,8 @@ navMobile.querySelectorAll('a').forEach(link => {
 
 const portfolioItems = [
   { category: "Podcast", name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true, url: "https://rolevaldez.com/episodios" },
-  { category: "Video promocional",   name: "Rinconcito del Sabor", image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ" },
-  { category: "Comercial",           name: "Block Master", image: "assets/portfolio/port-003.jpg", url: "https://www.youtube.com/watch?v=eDh1deXEFLM" },
+  { category: "Video promocional",   name: "Rinconcito del Sabor", image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ", effect: "promo" },
+  { category: "Comercial",           name: "Block Master", image: "assets/portfolio/port-003.jpg", url: "https://www.youtube.com/watch?v=eDh1deXEFLM", effect: "comercial" },
   { category: "Cobertura de evento", name: "Próximamente", image: null },
   { category: "Identidad de marca",  name: "Próximamente", image: null },
   { category: "Fotografía",          name: "Próximamente", image: null },
@@ -69,6 +69,7 @@ portfolioItems.forEach(item => {
       <canvas class="pod-canvas"></canvas>
       <span class="pod-rec"><span class="pod-dot"></span>REC</span>
     </div>` : ''}
+    ${item.effect ? `<canvas class="fx-canvas fx-${item.effect}" aria-hidden="true"></canvas>` : ''}
     <div class="portfolio-meta">
       <span class="portfolio-cat">${item.category}</span>
       <span class="portfolio-name">${item.name}</span>
@@ -455,4 +456,239 @@ if ('IntersectionObserver' in window) {
   }
 
   draw();
+})();
+
+// =========================================================
+// EFECTOS — VIDEO PROMOCIONAL (shimmer dorado + partículas cálidas)
+// =========================================================
+(function initPromoEffect() {
+  var canvas = document.querySelector('.fx-promo');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var card = canvas.closest('.portfolio-card');
+
+  function resize() {
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Partículas cálidas (vapor/chispas doradas)
+  var particles = Array.from({ length: 28 }, function() {
+    return {
+      x:     Math.random() * canvas.width,
+      y:     canvas.height + Math.random() * 40,
+      size:  Math.random() * 2.2 + 0.6,
+      speed: Math.random() * 0.6 + 0.2,
+      drift: (Math.random() - 0.5) * 0.4,
+      alpha: 0,
+      maxA:  Math.random() * 0.55 + 0.15,
+      life:  0,
+      maxLife: Math.random() * 180 + 120,
+      color: Math.random() > 0.4 ? '201,168,76' : '230,180,80',
+    };
+  });
+
+  // Shimmer — barra diagonal que barre
+  var shimmer = { x: -canvas.width * 1.5, speed: 0.8, pause: 0, pauseMax: 200 };
+
+  var t = 0;
+  function drawPromo() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t++;
+
+    // -- Shimmer dorado diagonal --
+    if (shimmer.pause > 0) {
+      shimmer.pause--;
+    } else {
+      shimmer.x += shimmer.speed;
+      if (shimmer.x > canvas.width * 2) {
+        shimmer.x = -canvas.width * 1.5;
+        shimmer.pause = shimmer.pauseMax;
+      }
+      var grd = ctx.createLinearGradient(
+        shimmer.x - 80, 0, shimmer.x + 80, canvas.height
+      );
+      grd.addColorStop(0,   'rgba(201,168,76,0)');
+      grd.addColorStop(0.4, 'rgba(201,168,76,0.13)');
+      grd.addColorStop(0.5, 'rgba(255,220,100,0.22)');
+      grd.addColorStop(0.6, 'rgba(201,168,76,0.13)');
+      grd.addColorStop(1,   'rgba(201,168,76,0)');
+
+      ctx.save();
+      ctx.transform(1, 0, -0.5, 1, 0, 0); // inclinar diagonal
+      ctx.fillStyle = grd;
+      ctx.fillRect(shimmer.x, 0, 160, canvas.height);
+      ctx.restore();
+    }
+
+    // -- Partículas cálidas subiendo --
+    particles.forEach(function(p) {
+      p.life++;
+      p.y     -= p.speed;
+      p.x     += p.drift + Math.sin(p.life * 0.04) * 0.3;
+      p.alpha  = p.life < 20
+        ? (p.life / 20) * p.maxA
+        : p.life > p.maxLife - 30
+          ? ((p.maxLife - p.life) / 30) * p.maxA
+          : p.maxA;
+
+      if (p.life >= p.maxLife || p.y < -10) {
+        p.x      = Math.random() * canvas.width;
+        p.y      = canvas.height + 10;
+        p.life   = 0;
+        p.maxLife= Math.random() * 180 + 120;
+        p.speed  = Math.random() * 0.6 + 0.2;
+        p.size   = Math.random() * 2.2 + 0.6;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + p.color + ',' + p.alpha.toFixed(2) + ')';
+      ctx.shadowColor = 'rgba(255,180,40,0.4)';
+      ctx.shadowBlur  = 4;
+      ctx.fill();
+      ctx.shadowBlur  = 0;
+    });
+
+    // -- Borde pulsante dorado --
+    var pulse = Math.sin(t * 0.025) * 0.5 + 0.5;
+    ctx.strokeStyle = 'rgba(201,168,76,' + (0.15 + pulse * 0.25).toFixed(2) + ')';
+    ctx.lineWidth   = 1.5;
+    ctx.shadowColor = 'rgba(201,168,76,0.5)';
+    ctx.shadowBlur  = pulse * 10;
+    ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    ctx.shadowBlur  = 0;
+
+    requestAnimationFrame(drawPromo);
+  }
+  drawPromo();
+})();
+
+// =========================================================
+// EFECTOS — COMERCIAL (scanlines + borde eléctrico)
+// =========================================================
+(function initComercialEffect() {
+  var canvas = document.querySelector('.fx-comercial');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var card = canvas.closest('.portfolio-card');
+
+  function resize() {
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Scanline
+  var scanY = 0;
+
+  // Borde eléctrico — segmentos que recorren el perímetro
+  var perim, segments;
+  function buildPerim() {
+    var W = canvas.width, H = canvas.height;
+    perim = W*2 + H*2;
+    segments = Array.from({ length: 4 }, function(_, i) {
+      return {
+        pos:   (perim / 4) * i + Math.random() * 60,
+        speed: 1.4 + Math.random() * 1.2,
+        tail:  40 + Math.random() * 50,
+        alpha: 0.7 + Math.random() * 0.3,
+        color: Math.random() > 0.5 ? '80,160,220' : '100,200,255',
+      };
+    });
+  }
+  buildPerim();
+  window.addEventListener('resize', buildPerim);
+
+  // Convertir posición en el perímetro a coordenadas x,y
+  function perimToXY(pos, W, H) {
+    var p = ((pos % perim) + perim) % perim;
+    if (p < W)              return [p, 0];
+    p -= W;
+    if (p < H)              return [W, p];
+    p -= H;
+    if (p < W)              return [W - p, H];
+    p -= W;
+    return [0, H - p];
+  }
+
+  // Glitch ocasional
+  var glitchTimer = 0, glitchDur = 0;
+
+  var t = 0;
+  function drawComercial() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t++;
+    var W = canvas.width, H = canvas.height;
+
+    // -- Scanlines --
+    scanY += 0.7;
+    if (scanY > H) scanY = -4;
+
+    for (var y = 0; y < H; y += 4) {
+      ctx.fillStyle = 'rgba(0,0,0,0.06)';
+      ctx.fillRect(0, y, W, 1);
+    }
+    // Línea brillante que baja
+    var sg = ctx.createLinearGradient(0, scanY - 6, 0, scanY + 6);
+    sg.addColorStop(0,   'rgba(100,180,255,0)');
+    sg.addColorStop(0.5, 'rgba(100,180,255,0.18)');
+    sg.addColorStop(1,   'rgba(100,180,255,0)');
+    ctx.fillStyle = sg;
+    ctx.fillRect(0, scanY - 6, W, 12);
+
+    // -- Glitch ocasional --
+    if (glitchDur > 0) {
+      glitchDur--;
+      var sliceH = 3 + Math.random() * 8;
+      var sliceY = Math.random() * H;
+      var shift  = (Math.random() - 0.5) * 12;
+      ctx.save();
+      ctx.drawImage(canvas, 0, sliceY, W, sliceH, shift, sliceY, W, sliceH);
+      ctx.restore();
+      ctx.fillStyle = 'rgba(80,160,220,0.08)';
+      ctx.fillRect(0, sliceY, W, sliceH);
+    } else {
+      glitchTimer++;
+      if (glitchTimer > 180 + Math.random() * 300) {
+        glitchTimer = 0;
+        glitchDur   = 3 + Math.floor(Math.random() * 5);
+      }
+    }
+
+    // -- Borde eléctrico --
+    segments.forEach(function(seg) {
+      seg.pos += seg.speed;
+      if (seg.pos > perim) seg.pos -= perim;
+
+      var steps = 20;
+      for (var s = 0; s < steps; s++) {
+        var tA = seg.pos - seg.tail + (seg.tail / steps) * s;
+        var tB = seg.pos - seg.tail + (seg.tail / steps) * (s + 1);
+        var ptA = perimToXY(tA, W, H);
+        var ptB = perimToXY(tB, W, H);
+        var alpha = (s / steps);
+        alpha = alpha * alpha * seg.alpha;
+
+        // Jitter eléctrico
+        var jitter = s === steps - 1 ? (Math.random() - 0.5) * 3 : 0;
+
+        ctx.beginPath();
+        ctx.moveTo(ptA[0], ptA[1]);
+        ctx.lineTo(ptB[0] + jitter, ptB[1] + jitter);
+        ctx.strokeStyle = 'rgba(' + seg.color + ',' + alpha.toFixed(2) + ')';
+        ctx.lineWidth   = 1.8;
+        ctx.shadowColor = 'rgba(80,160,255,0.7)';
+        ctx.shadowBlur  = 8;
+        ctx.stroke();
+      }
+      ctx.shadowBlur = 0;
+    });
+
+    requestAnimationFrame(drawComercial);
+  }
+  drawComercial();
 })();
