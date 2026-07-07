@@ -43,7 +43,7 @@ navMobile.querySelectorAll('a').forEach(link => {
 
 const portfolioItems = [
   { category: "Podcast", name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true, url: "https://rolevaldez.com/episodios" },
-  { category: "Video promocional",   name: "Próximamente", image: null },
+  { category: "Video promocional",   name: "Rinconcito del Sabor", image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ" },
   { category: "Comercial",           name: "Próximamente", image: null },
   { category: "Cobertura de evento", name: "Próximamente", image: null },
   { category: "Identidad de marca",  name: "Próximamente", image: null },
