@@ -47,7 +47,7 @@ const portfolioItems = [
   { category: "Comercial",           name: "Block Master", image: "assets/portfolio/port-003.jpg", url: "https://www.youtube.com/watch?v=eDh1deXEFLM", effect: "comercial" },
   { category: "Cobertura de evento", name: "Animatoons", image: "assets/portfolio/port-005.jpg", url: "https://www.youtube.com/watch?v=vuf1s4aMG7Q", effect: "evento" },
   { category: "Identidad de marca",  name: "D'Kachuchas", image: "assets/portfolio/port-004.jpg", url: "https://www.youtube.com/watch?v=2_4UBIXYl-M", effect: "branding" },
-  { category: "Fotografía",          name: "Próximamente", image: null },
+  { category: "Fotografía",          name: "Peregrina", image: "assets/portfolio/port-006.jpg", effect: "foto" },
 ];
 
 const grid = document.getElementById('portfolioGrid');
@@ -1008,4 +1008,173 @@ if ('IntersectionObserver' in window) {
     requestAnimationFrame(drawEvento);
   }
   drawEvento();
+})();
+
+// =========================================================
+// EFECTOS — FOTOGRAFÍA (obturador + viñeta + luz de flash)
+// =========================================================
+(function initFotoEffect() {
+  var canvas = document.querySelector('.fx-foto');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var card = canvas.closest('.portfolio-card');
+
+  function resize() {
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Obturador — círculo que se abre y cierra
+  var shutter = {
+    phase:    0,
+    interval: 280,
+    timer:    0,
+    state:    'idle', // idle | closing | opening
+    progress: 0,
+  };
+
+  // Partículas de luz (bokeh)
+  var bokeh = Array.from({ length: 20 }, function() {
+    return {
+      x:     Math.random(),
+      y:     Math.random(),
+      r:     Math.random() * 14 + 6,
+      alpha: Math.random() * 0.15 + 0.04,
+      pulse: Math.random() * Math.PI * 2,
+      speed: 0.012 + Math.random() * 0.01,
+    };
+  });
+
+  // Flash
+  var flash = { alpha: 0, timer: 0, interval: 320 + Math.floor(Math.random() * 200) };
+
+  // Partículas de polvo luminoso
+  var dust = Array.from({ length: 25 }, function() {
+    return {
+      x:     Math.random(),
+      y:     Math.random(),
+      size:  Math.random() * 1.5 + 0.4,
+      alpha: Math.random() * 0.3 + 0.05,
+      dx:    (Math.random() - 0.5) * 0.003,
+      dy:    (Math.random() - 0.5) * 0.003,
+      pulse: Math.random() * Math.PI * 2,
+      pSpeed:Math.random() * 0.02 + 0.008,
+    };
+  });
+
+  var t = 0;
+  function drawFoto() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t++;
+    var W = canvas.width, H = canvas.height;
+
+    // -- Viñeta fotográfica --
+    var vgrd = ctx.createRadialGradient(W/2, H/2, H*0.25, W/2, H/2, H*0.75);
+    vgrd.addColorStop(0, 'rgba(0,0,0,0)');
+    vgrd.addColorStop(1, 'rgba(0,0,0,0.45)');
+    ctx.fillStyle = vgrd;
+    ctx.fillRect(0, 0, W, H);
+
+    // -- Bokeh (círculos de luz difusos) --
+    bokeh.forEach(function(b) {
+      b.pulse += b.speed;
+      var alpha = b.alpha * (0.5 + Math.sin(b.pulse) * 0.5);
+      var grd = ctx.createRadialGradient(b.x*W, b.y*H, 0, b.x*W, b.y*H, b.r);
+      grd.addColorStop(0,   'rgba(255,255,200,' + (alpha * 1.5).toFixed(2) + ')');
+      grd.addColorStop(0.4, 'rgba(255,240,180,' + alpha.toFixed(2) + ')');
+      grd.addColorStop(1,   'rgba(255,220,150,0)');
+      ctx.beginPath();
+      ctx.arc(b.x*W, b.y*H, b.r, 0, Math.PI*2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+      // Anillo de bokeh
+      ctx.beginPath();
+      ctx.arc(b.x*W, b.y*H, b.r * 0.85, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(255,255,200,' + (alpha * 0.4).toFixed(2) + ')';
+      ctx.lineWidth   = 0.8;
+      ctx.stroke();
+    });
+
+    // -- Polvo luminoso --
+    dust.forEach(function(d) {
+      d.x     += d.dx;
+      d.y     += d.dy;
+      d.pulse += d.pSpeed;
+      if (d.x < 0 || d.x > 1) d.dx *= -1;
+      if (d.y < 0 || d.y > 1) d.dy *= -1;
+      var alpha = d.alpha * (0.4 + Math.sin(d.pulse) * 0.6);
+      ctx.beginPath();
+      ctx.arc(d.x*W, d.y*H, d.size, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,240,200,' + alpha.toFixed(2) + ')';
+      ctx.fill();
+    });
+
+    // -- Obturador de cámara --
+    shutter.timer++;
+    if (shutter.state === 'idle' && shutter.timer >= shutter.interval) {
+      shutter.state    = 'closing';
+      shutter.progress = 0;
+      shutter.timer    = 0;
+      shutter.interval = 280 + Math.floor(Math.random() * 220);
+    }
+    if (shutter.state === 'closing') {
+      shutter.progress += 0.07;
+      if (shutter.progress >= 1) {
+        shutter.progress = 1;
+        shutter.state    = 'opening';
+        // Disparar flash al cerrar
+        flash.alpha = 0.5;
+      }
+    }
+    if (shutter.state === 'opening') {
+      shutter.progress -= 0.05;
+      if (shutter.progress <= 0) {
+        shutter.progress = 0;
+        shutter.state    = 'idle';
+      }
+    }
+
+    if (shutter.progress > 0) {
+      var cx = W * 0.5, cy = H * 0.5;
+      var blades = 8;
+      var outerR = Math.max(W, H) * 0.75;
+      var innerR = outerR * (1 - shutter.progress);
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,' + (shutter.progress * 0.85).toFixed(2) + ')';
+      for (var i = 0; i < blades; i++) {
+        var a1 = (i / blades) * Math.PI * 2;
+        var a2 = ((i + 0.5) / blades) * Math.PI * 2;
+        var a3 = ((i + 1) / blades) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, outerR, a1, a2);
+        ctx.arc(cx, cy, innerR * shutter.progress, a2, a3, true);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // -- Flash de cámara --
+    if (flash.alpha > 0) {
+      ctx.fillStyle = 'rgba(255,255,255,' + flash.alpha.toFixed(2) + ')';
+      ctx.fillRect(0, 0, W, H);
+      flash.alpha -= 0.06;
+      if (flash.alpha < 0) flash.alpha = 0;
+    }
+
+    // -- Borde de marco fotográfico --
+    var pulse = Math.sin(t * 0.02) * 0.3 + 0.7;
+    ctx.strokeStyle = 'rgba(255,255,200,' + (0.12 * pulse).toFixed(2) + ')';
+    ctx.lineWidth   = 2;
+    ctx.strokeRect(8, 8, W - 16, H - 16);
+    ctx.strokeStyle = 'rgba(255,255,200,' + (0.06 * pulse).toFixed(2) + ')';
+    ctx.lineWidth   = 1;
+    ctx.strokeRect(13, 13, W - 26, H - 26);
+
+    requestAnimationFrame(drawFoto);
+  }
+  drawFoto();
 })();
