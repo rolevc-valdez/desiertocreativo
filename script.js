@@ -45,7 +45,7 @@ const portfolioItems = [
   { category: "Podcast", name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true, url: "https://rolevaldez.com/episodios" },
   { category: "Video promocional",   name: "Rinconcito del Sabor", image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ", effect: "promo" },
   { category: "Comercial",           name: "Block Master", image: "assets/portfolio/port-003.jpg", url: "https://www.youtube.com/watch?v=eDh1deXEFLM", effect: "comercial" },
-  { category: "Cobertura de evento", name: "Próximamente", image: null },
+  { category: "Cobertura de evento", name: "Animatoons", image: "assets/portfolio/port-005.jpg", url: "https://www.youtube.com/watch?v=vuf1s4aMG7Q", effect: "evento" },
   { category: "Identidad de marca",  name: "D'Kachuchas", image: "assets/portfolio/port-004.jpg", url: "https://www.youtube.com/watch?v=2_4UBIXYl-M", effect: "branding" },
   { category: "Fotografía",          name: "Próximamente", image: null },
 ];
@@ -836,4 +836,176 @@ if ('IntersectionObserver' in window) {
     requestAnimationFrame(drawBranding);
   }
   drawBranding();
+})();
+
+// =========================================================
+// EFECTOS — COBERTURA DE EVENTO ANIME
+// confetti de colores + flash fotográfico + bordes de película
+// =========================================================
+(function initEventoEffect() {
+  var canvas = document.querySelector('.fx-evento');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var card = canvas.closest('.portfolio-card');
+
+  function resize() {
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Colores anime vibrantes
+  var animeColors = [
+    '255,80,160',   // rosa
+    '80,200,255',   // azul cielo
+    '255,220,0',    // amarillo
+    '120,255,120',  // verde neón
+    '200,80,255',   // morado
+    '255,140,0',    // naranja
+  ];
+
+  // Confetti
+  var confetti = Array.from({ length: 45 }, function() {
+    return {
+      x:      Math.random() * 800,
+      y:      Math.random() * -200 - 10,
+      w:      Math.random() * 7 + 3,
+      h:      Math.random() * 4 + 2,
+      rot:    Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.12,
+      speed:  Math.random() * 1.4 + 0.5,
+      drift:  (Math.random() - 0.5) * 0.8,
+      alpha:  Math.random() * 0.7 + 0.3,
+      color:  animeColors[Math.floor(Math.random() * animeColors.length)],
+      phase:  Math.random() * Math.PI * 2,
+    };
+  });
+
+  // Flash fotográfico
+  var flash = { alpha: 0, timer: 0, interval: 220 + Math.floor(Math.random() * 180) };
+
+  // Estrellas tipo anime (★ destello)
+  var stars = Array.from({ length: 8 }, function() {
+    return {
+      x:     Math.random(),
+      y:     Math.random(),
+      size:  Math.random() * 8 + 4,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.04 + Math.random() * 0.03,
+      color: animeColors[Math.floor(Math.random() * animeColors.length)],
+    };
+  });
+
+  var t = 0;
+  function drawEvento() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t++;
+    var W = canvas.width, H = canvas.height;
+
+    // -- Confetti cayendo --
+    confetti.forEach(function(p) {
+      p.y   += p.speed;
+      p.x   += p.drift + Math.sin(t * 0.02 + p.phase) * 0.5;
+      p.rot += p.rotSpeed;
+
+      if (p.y > H + 20) {
+        p.y = -10 - Math.random() * 40;
+        p.x = Math.random() * W;
+      }
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = p.alpha * (0.6 + Math.sin(t * 0.03 + p.phase) * 0.4);
+      ctx.fillStyle   = 'rgba(' + p.color + ',1)';
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    });
+
+    // -- Estrellas de destello anime --
+    stars.forEach(function(s) {
+      s.phase += s.speed;
+      var pulse = Math.sin(s.phase) * 0.5 + 0.5;
+      if (pulse < 0.3) return;
+
+      var x = s.x * W, y = s.y * H;
+      var size = s.size * pulse;
+
+      // Cruz de destello (★ estilo manga)
+      ctx.save();
+      ctx.globalAlpha = pulse * 0.85;
+      ctx.strokeStyle = 'rgba(' + s.color + ',1)';
+      ctx.shadowColor = 'rgba(' + s.color + ',0.8)';
+      ctx.shadowBlur  = 8;
+      ctx.lineWidth   = 1.5;
+
+      // Línea horizontal
+      ctx.beginPath();
+      ctx.moveTo(x - size * 1.4, y);
+      ctx.lineTo(x + size * 1.4, y);
+      ctx.stroke();
+      // Línea vertical
+      ctx.beginPath();
+      ctx.moveTo(x, y - size * 1.4);
+      ctx.lineTo(x, y + size * 1.4);
+      ctx.stroke();
+      // Diagonales más cortas
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(x - size * 0.8, y - size * 0.8);
+      ctx.lineTo(x + size * 0.8, y + size * 0.8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x + size * 0.8, y - size * 0.8);
+      ctx.lineTo(x - size * 0.8, y + size * 0.8);
+      ctx.stroke();
+
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur  = 0;
+    });
+
+    // -- Flash fotográfico --
+    flash.timer++;
+    if (flash.timer >= flash.interval) {
+      flash.timer    = 0;
+      flash.interval = 200 + Math.floor(Math.random() * 300);
+      flash.alpha    = 0.45;
+    }
+    if (flash.alpha > 0) {
+      ctx.fillStyle   = 'rgba(255,255,255,' + flash.alpha.toFixed(2) + ')';
+      ctx.fillRect(0, 0, W, H);
+      flash.alpha    -= 0.04;
+      if (flash.alpha < 0) flash.alpha = 0;
+    }
+
+    // -- Borde de película (sprocket holes) --
+    var holeSize = 6, holeGap = 16, margin = 5;
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    for (var hy = holeGap; hy < H - holeGap; hy += holeGap) {
+      // Izquierda
+      ctx.beginPath();
+      ctx.roundRect
+        ? ctx.roundRect(margin, hy, holeSize, holeSize * 0.7, 1)
+        : ctx.rect(margin, hy, holeSize, holeSize * 0.7);
+      ctx.fill();
+      // Derecha
+      ctx.beginPath();
+      ctx.roundRect
+        ? ctx.roundRect(W - margin - holeSize, hy, holeSize, holeSize * 0.7, 1)
+        : ctx.rect(W - margin - holeSize, hy, holeSize, holeSize * 0.7);
+      ctx.fill();
+    }
+
+    // Líneas verticales de película
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth   = 2;
+    ctx.beginPath(); ctx.moveTo(margin + holeSize + 3, 0); ctx.lineTo(margin + holeSize + 3, H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W - margin - holeSize - 3, 0); ctx.lineTo(W - margin - holeSize - 3, H); ctx.stroke();
+
+    requestAnimationFrame(drawEvento);
+  }
+  drawEvento();
 })();
