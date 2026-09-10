@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dando un Rol con el Role — Podcast</title>
+<meta name="description" content="Episodios del podcast Dando un Rol con el Role, producido por Desierto Creativo.">
+<link rel="icon" href="assets/logo-transparente.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,500;1,600&family=Jost:wght@300;400;500;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .podcast-hero {
+    padding: 160px 24px 0;
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .podcast-cover {
+    width: 220px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+  .podcast-cover img { width: 100%; display: block; }
+  .podcast-info { flex: 1; min-width: 240px; padding-top: 8px; }
+  .podcast-info .kicker { margin-bottom: 10px; }
+  .podcast-info h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    margin: 0 0 16px;
+    font-style: italic;
+  }
+  .podcast-info p {
+    font-size: 16px;
+    color: var(--ink-dim);
+    font-weight: 300;
+    margin: 0 0 24px;
+    max-width: 480px;
+  }
+  .podcast-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .podcast-link {
+    font-family: var(--font-caps);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .podcast-link:hover { border-color: var(--teal); color: var(--teal); }
+  .podcast-link.primary {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .podcast-link.primary:hover { background: var(--teal); border-color: var(--teal); color: var(--ink); }
+
+  /* Lista de episodios */
+  .episodes-section {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+  .episodes-section .kicker { margin-bottom: 32px; }
+
+  .episodes-list { display: flex; flex-direction: column; gap: 0; }
+
+  .episode-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
+    transition: padding-left 0.25s ease;
+  }
+  .episode-card:hover { padding-left: 10px; }
+  .episode-card:hover .ep-title { color: var(--teal); }
+
+  .ep-thumb {
+    width: 100px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--bg-alt);
+    position: relative;
+  }
+  .ep-thumb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+  .ep-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .episode-card:hover .ep-play { opacity: 1; }
+
+  .ep-num {
+    font-family: var(--font-caps);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    flex-shrink: 0;
+    width: 36px;
+    text-align: right;
+  }
+  .ep-info { flex: 1; min-width: 0; }
+  .ep-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+  }
+  .ep-date {
+    font-family: var(--font-caps);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+  .ep-arrow {
+    font-size: 18px;
+    color: var(--ink-dim);
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .episode-card:hover .ep-arrow { color: var(--teal); transform: translateX(4px); }
+
+  .loading-msg {
+    text-align: center;
+    padding: 60px 0;
+    font-family: var(--font-caps);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 560px) {
+    .podcast-hero { padding: 140px 16px 0; gap: 24px; }
+    .podcast-cover { width: 140px; }
+    .episodes-section { padding: 40px 16px 80px; }
+    .ep-num { display: none; }
+    .ep-thumb { width: 80px; height: 45px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a href="index.html" class="brand">
+      <img src="assets/logo-transparente.png" alt="Desierto Creativo" class="brand-logo">
+    </a>
+    <nav class="nav-desktop">
+      <a href="index.html#nosotros">Nosotros</a>
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#portafolio">Portafolio</a>
+      <a href="videos.html">Videos</a>
+      <a href="podcast.html" style="color:var(--teal)">Podcast</a>
+      <a href="index.html#contacto" class="nav-cta">Contacto</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href="index.html#nosotros">Nosotros</a>
+    <a href="index.html#servicios">Servicios</a>
+    <a href="index.html#portafolio">Portafolio</a>
+    <a href="videos.html">Videos</a>
+    <a href="podcast.html">Podcast</a>
+    <a href="index.html#contacto">Contacto</a>
+  </nav>
+</header>
+
+<main>
+  <div class="podcast-hero">
+    <div class="podcast-cover">
+      <img src="assets/portfolio/port-001.jpg" alt="Dando un Rol con el Role">
+    </div>
+    <div class="podcast-info">
+      <p class="kicker">Podcast</p>
+      <h1>Dando un Rol<br>con el Role</h1>
+      <p>Conversaciones auténticas sobre motociclismo, vida, cultura y todo lo que pasa en el camino. Hosted by Role Valdez.</p>
+      <div class="podcast-links">
+        <a class="podcast-link primary" href="https://www.youtube.com/playlist?list=PLOP6i2TCCXadbjQYrBhXyC6Hx1cAo5f3-" target="_blank" rel="noopener">▶ Ver en YouTube</a>
+        <a class="podcast-link" href="https://rolevaldez.com/episodios" target="_blank" rel="noopener">rolevaldez.com</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="episodes-section">
+    <p class="kicker">Episodios</p>
+    <div class="episodes-list" id="episodesList">
+      <div class="loading-msg">Cargando episodios...</div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <img src="assets/logo-transparente.png" alt="Desierto Creativo" class="footer-logo">
+  <nav class="footer-social">
+    <a href="https://www.instagram.com/desiertocreativo/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.facebook.com/DESIERTOCREATIVO" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://wa.me/526331244172" target="_blank" rel="noopener">WhatsApp</a>
+  </nav>
+  <p class="footer-credit">Sitio creado por <a href="https://rolevaldez.com" target="_blank" rel="noopener">RoleValdez.com</a></p>
+  <p>© <span id="year"></span> Desierto Creativo. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+document.documentElement.classList.remove('no-js');
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const navToggle = document.getElementById('navToggle');
+const navMobile = document.getElementById('navMobile');
+navToggle.addEventListener('click', () => {
+  const open = navMobile.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', open);
+});
+
+const header = document.getElementById('siteHeader');
+window.addEventListener('scroll', () => {
+  header.style.background = window.scrollY > 40
+    ? 'rgba(10,10,10,0.92)'
+    : 'linear-gradient(to bottom,rgba(10,10,10,0.92),rgba(10,10,10,0))';
+});
+
+// =========================================================
+// Cargar episodios del podcast via RSS
+// PLOP6i2TCCXadbjQYrBhXyC6Hx1cAo5f3- = Dando un Rol con el Role
+// =========================================================
+const PODCAST_PLAYLIST = 'PLOP6i2TCCXadbjQYrBhXyC6Hx1cAo5f3-';
+
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+async function loadEpisodes() {
+  const list = document.getElementById('episodesList');
+  try {
+    const RSS_URL = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PODCAST_PLAYLIST}`;
+    const PROXY   = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`;
+
+    const res  = await fetch(PROXY);
+    const data = await res.json();
+    const xml  = new DOMParser().parseFromString(data.contents, 'text/xml');
+    const entries = Array.from(xml.querySelectorAll('entry'));
+
+    if (!entries.length) throw new Error('Sin entradas');
+
+    list.innerHTML = entries.map((entry, i) => {
+      const title   = entry.querySelector('title')?.textContent || '';
+      const link    = entry.querySelector('link')?.getAttribute('href') || '';
+      const date    = entry.querySelector('published')?.textContent || '';
+      const videoId = entry.querySelector('videoId')?.textContent || '';
+      const thumb   = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+      const num     = String(entries.length - i).padStart(2, '0');
+
+      return `
+        <a class="episode-card reveal" href="${link}" target="_blank" rel="noopener">
+          <span class="ep-num">${num}</span>
+          <div class="ep-thumb">
+            <img src="${thumb}" alt="${title}" loading="lazy">
+            <div class="ep-play">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+            </div>
+          </div>
+          <div class="ep-info">
+            <p class="ep-title">${title}</p>
+            <span class="ep-date">${formatDate(date)}</span>
+          </div>
+          <span class="ep-arrow">›</span>
+        </a>`;
+    }).join('');
+
+    // Reveal on scroll
+    const cards = list.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+    }, { threshold: 0.05 });
+    cards.forEach(c => obs.observe(c));
+
+  } catch (e) {
+    list.innerHTML = `
+      <div style="text-align:center;padding:60px 0;color:var(--ink-dim)">
+        <p>No se pudieron cargar los episodios en este momento.</p>
+        <p style="margin-top:12px">
+          <a href="https://www.youtube.com/playlist?list=${PODCAST_PLAYLIST}" target="_blank"
+             style="color:var(--teal);font-family:var(--font-caps);font-size:13px;letter-spacing:0.1em;text-transform:uppercase">
+            Ver en YouTube →
+          </a>
+        </p>
+      </div>`;
+  }
+}
+
+loadEpisodes();
+</script>
+</body>
+</html>

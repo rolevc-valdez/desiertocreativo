@@ -42,12 +42,9 @@ navMobile.querySelectorAll('a').forEach(link => {
 // como espacio reservado ("Proximamente").
 
 const portfolioItems = [
-  { category: "Podcast", name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true, url: "https://rolevaldez.com/episodios" },
-  { category: "Video promocional",   name: "Rinconcito del Sabor", image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ", effect: "promo" },
-  { category: "Comercial",           name: "Block Master", image: "assets/portfolio/port-003.jpg", url: "https://www.youtube.com/watch?v=eDh1deXEFLM", effect: "comercial" },
-  { category: "Cobertura de evento", name: "Animatoons", image: "assets/portfolio/port-005.jpg", url: "https://www.youtube.com/watch?v=vuf1s4aMG7Q", effect: "evento" },
-  { category: "Identidad de marca",  name: "D'Kachuchas", image: "assets/portfolio/port-004.jpg", url: "https://www.youtube.com/watch?v=2_4UBIXYl-M", effect: "branding" },
-  { category: "Fotografía",          name: "Peregrina", image: "assets/portfolio/port-006.jpg", effect: "foto" },
+  { category: "Podcast",              name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true, url: "podcast.html", internal: true },
+  { category: "Videos y comerciales", name: "Comercio local",           image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ", effect: "promo" },
+  { category: "Fotografía",           name: "Peregrina",                image: "assets/portfolio/port-006.jpg", effect: "foto" },
 ];
 
 const grid = document.getElementById('portfolioGrid');
@@ -57,9 +54,11 @@ portfolioItems.forEach(item => {
   const card = document.createElement(isLink ? 'a' : 'div');
   card.className = 'portfolio-card' + (item.image ? '' : ' placeholder') + (item.animated ? ' portfolio-animated' : '');
   if (isLink) {
-    card.href   = item.url;
-    card.target = '_blank';
-    card.rel    = 'noopener';
+    card.href = item.url;
+    if (!item.internal) {
+      card.target = '_blank';
+      card.rel    = 'noopener';
+    }
   }
 
   card.innerHTML = `
