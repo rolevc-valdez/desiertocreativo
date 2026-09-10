@@ -43,7 +43,7 @@ navMobile.querySelectorAll('a').forEach(link => {
 
 const portfolioItems = [
   { category: "Podcast",              name: "Dando un Rol con el Role", image: "assets/portfolio/port-001.jpg", animated: true, url: "podcast.html", internal: true },
-  { category: "Videos y comerciales", name: "Comercio local",           image: "assets/portfolio/port-002.jpg", url: "https://www.youtube.com/watch?v=kK-jzx7FBJQ", effect: "promo" },
+  { category: "Videos y comerciales", name: "Comercio local",           image: "assets/portfolio/port-002.jpg", url: "videos.html", internal: true, effect: "promo" },
   { category: "Fotografía",           name: "Peregrina",                image: "assets/portfolio/port-006.jpg", effect: "foto" },
 ];
 
