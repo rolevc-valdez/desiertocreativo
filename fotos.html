@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galería de Fotografía — Desierto Creativo</title>
+<meta name="description" content="Galería fotográfica de Desierto Creativo: retratos, publicidad, eventos, cosplay y más.">
+<link rel="icon" href="assets/logo-transparente.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,500;1,600&family=Jost:wght@300;400;500;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ── Encabezado de página ── */
+.page-hero {
+  padding: 160px 24px 48px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.page-hero .section-title { margin-bottom: 8px; }
+.page-hero .body-text      { margin-bottom: 0; }
+
+/* ── Filtros de categoría ── */
+.filters {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filter-btn {
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-dim);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.filter-btn:hover   { border-color: var(--teal); color: var(--teal); }
+.filter-btn.active  { background: var(--teal); border-color: var(--teal); color: var(--ink); }
+
+/* ── Sección de categoría ── */
+.category-section {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+  transition: opacity 0.4s ease;
+}
+.category-section.hidden { display: none; }
+.category-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.6rem;
+  font-style: italic;
+  margin: 0 0 6px;
+}
+.category-meta {
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin: 0 0 24px;
+  display: block;
+}
+.category-divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 0 0 28px;
+}
+
+/* ── Grid de fotos ── */
+.photo-grid {
+  columns: 4 220px;
+  column-gap: 6px;
+}
+.photo-item {
+  break-inside: avoid;
+  margin-bottom: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  background: var(--bg-alt);
+}
+.photo-item img {
+  width: 100%;
+  display: block;
+  opacity: 0.88;
+  transition: opacity 0.35s ease, transform 0.45s ease;
+}
+.photo-item:hover img {
+  opacity: 1;
+  transform: scale(1.04);
+}
+.photo-item::after {
+  content: "⊕";
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0.6);
+  font-size: 28px;
+  color: rgba(255,255,255,0.9);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  text-shadow: 0 0 12px rgba(0,0,0,0.8);
+}
+.photo-item:hover::after {
+  opacity: 1;
+  transform: translate(-50%,-50%) scale(1);
+}
+
+/* ── Lightbox ── */
+#lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,5,5,0.97);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#lightbox.open { display: flex; }
+
+#lbImg {
+  max-width: 92vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 2px;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+#lbCaption {
+  margin-top: 14px;
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+#lbCounter {
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+  margin-top: 6px;
+}
+
+.lb-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 22px;
+  width: 48px; height: 48px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.lb-btn:hover  { background: rgba(63,130,136,0.3); border-color: var(--teal); }
+#lbPrev        { left: 16px; }
+#lbNext        { right: 16px; }
+#lbClose {
+  position: fixed;
+  top: 16px; right: 20px;
+  background: none; border: none;
+  color: var(--ink-dim);
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+#lbClose:hover { color: var(--ink); }
+
+/* teclado hint */
+.lb-hint {
+  position: fixed;
+  bottom: 16px;
+  font-family: var(--font-caps);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.2);
+  text-transform: uppercase;
+}
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .page-hero  { padding: 140px 16px 36px; }
+  .filters    { padding: 0 16px 28px; }
+  .category-section { padding: 0 16px 48px; }
+  .photo-grid { columns: 2 140px; }
+  #lbPrev     { left: 6px; }
+  #lbNext     { right: 6px; }
+  .lb-btn     { width: 38px; height: 38px; font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<!-- ── Lightbox ── -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de foto">
+  <button id="lbClose" aria-label="Cerrar">×</button>
+  <button id="lbPrev"  class="lb-btn" aria-label="Anterior">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button id="lbNext"  class="lb-btn" aria-label="Siguiente">›</button>
+  <p id="lbCaption"></p>
+  <p id="lbCounter"></p>
+  <p class="lb-hint">← → navegar &nbsp;·&nbsp; ESC cerrar</p>
+</div>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a href="index.html" class="brand">
+      <img src="assets/logo-transparente.png" alt="Desierto Creativo" class="brand-logo">
+    </a>
+    <nav class="nav-desktop">
+      <a href="index.html#nosotros">Nosotros</a>
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#portafolio">Portafolio</a>
+      <a href="videos.html">Videos</a>
+      <a href="podcast.html">Podcast</a>
+      <a href="fotos.html" style="color:var(--teal)">Fotos</a>
+      <a href="index.html#contacto" class="nav-cta">Contacto</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href="index.html#nosotros">Nosotros</a>
+    <a href="index.html#servicios">Servicios</a>
+    <a href="index.html#portafolio">Portafolio</a>
+    <a href="videos.html">Videos</a>
+    <a href="podcast.html">Podcast</a>
+    <a href="fotos.html">Fotos</a>
+    <a href="index.html#contacto">Contacto</a>
+  </nav>
+</header>
+
+<main>
+  <div class="page-hero">
+    <p class="kicker">Desierto Creativo</p>
+    <h1 class="section-title">Galería<br><em style="color:var(--teal);font-style:italic">fotográfica</em></h1>
+    <p class="body-text">Retratos, publicidad, eventos, cosplay y más — cada sesión, una historia.</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">Todas</button>
+    <button class="filter-btn" data-filter="publicidad">Publicidad</button>
+    <button class="filter-btn" data-filter="retratos">Retratos</button>
+    <button class="filter-btn" data-filter="eventos">Eventos</button>
+    <button class="filter-btn" data-filter="cosplay">Cosplay</button>
+  </div>
+
+  <!-- ── Categorías ── -->
+
+  <section class="category-section" data-tags="publicidad">
+    <p class="category-meta">23 fotos · Publicidad</p>
+    <h2 class="category-title">Comida &amp; Publicidad</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-comida"></div>
+  </section>
+
+  <section class="category-section" data-tags="publicidad">
+    <p class="category-meta">16 fotos · Publicidad</p>
+    <h2 class="category-title">Ropa Deportiva</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-ropa"></div>
+  </section>
+
+  <section class="category-section" data-tags="publicidad">
+    <p class="category-meta">6 fotos · Publicidad</p>
+    <h2 class="category-title">Moda &amp; Bolsas</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-bolsas"></div>
+  </section>
+
+  <section class="category-section" data-tags="retratos">
+    <p class="category-meta">11 fotos · Retratos</p>
+    <h2 class="category-title">Pin-up Vintage</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-pinup"></div>
+  </section>
+
+  <section class="category-section" data-tags="retratos">
+    <p class="category-meta">9 fotos · Retratos</p>
+    <h2 class="category-title">Retratos en Moto</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-moto"></div>
+  </section>
+
+  <section class="category-section" data-tags="retratos">
+    <p class="category-meta">6 fotos · Retratos</p>
+    <h2 class="category-title">Retratos Corporativos</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-corp"></div>
+  </section>
+
+  <section class="category-section" data-tags="retratos">
+    <p class="category-meta">6 fotos · Retratos</p>
+    <h2 class="category-title">Otoño Vintage</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-otono"></div>
+  </section>
+
+  <section class="category-section" data-tags="retratos">
+    <p class="category-meta">5 fotos · Retratos</p>
+    <h2 class="category-title">Sombrilla &amp; Desierto</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-desierto"></div>
+  </section>
+
+  <section class="category-section" data-tags="eventos">
+    <p class="category-meta">11 fotos · Eventos</p>
+    <h2 class="category-title">Sesión de Navidad</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-navidad"></div>
+  </section>
+
+  <section class="category-section" data-tags="eventos">
+    <p class="category-meta">10 fotos · Eventos</p>
+    <h2 class="category-title">Sesión DJ</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-dj"></div>
+  </section>
+
+  <section class="category-section" data-tags="eventos">
+    <p class="category-meta">9 fotos · Interiores</p>
+    <h2 class="category-title">Hotel María Bonita</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-hotel"></div>
+  </section>
+
+  <section class="category-section" data-tags="eventos">
+    <p class="category-meta">8 fotos · Eventos</p>
+    <h2 class="category-title">XV Años &amp; Bodas</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-xv"></div>
+  </section>
+
+  <section class="category-section" data-tags="eventos">
+    <p class="category-meta">6 fotos · Eventos</p>
+    <h2 class="category-title">Carrera de Color</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-color"></div>
+  </section>
+
+  <section class="category-section" data-tags="cosplay">
+    <p class="category-meta">8 fotos · Cosplay</p>
+    <h2 class="category-title">Cosplay Terror</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-terror"></div>
+  </section>
+
+  <section class="category-section" data-tags="cosplay">
+    <p class="category-meta">6 fotos · Cosplay</p>
+    <h2 class="category-title">Cosplay Chun-Li</h2>
+    <hr class="category-divider">
+    <div class="photo-grid" id="grid-chunli"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <img src="assets/logo-transparente.png" alt="Desierto Creativo" class="footer-logo">
+  <nav class="footer-social">
+    <a href="https://www.instagram.com/desiertocreativo/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.facebook.com/DESIERTOCREATIVO" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://wa.me/526331244172" target="_blank" rel="noopener">WhatsApp</a>
+  </nav>
+  <p class="footer-credit">Sitio creado por <a href="https://rolevaldez.com" target="_blank" rel="noopener">RoleValdez.com</a></p>
+  <p>© <span id="year"></span> Desierto Creativo. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+document.documentElement.classList.remove('no-js');
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Menú móvil
+const navToggle = document.getElementById('navToggle');
+const navMobile = document.getElementById('navMobile');
+navToggle.addEventListener('click', () => {
+  const open = navMobile.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', open);
+});
+
+const header = document.getElementById('siteHeader');
+window.addEventListener('scroll', () => {
+  header.style.background = window.scrollY > 40
+    ? 'rgba(10,10,10,0.92)'
+    : 'linear-gradient(to bottom,rgba(10,10,10,0.92),rgba(10,10,10,0))';
+});
+
+// =========================================================
+// CATÁLOGO DE FOTOS
+// Cada entrada: { folder, id, ext }
+// folder = subcarpeta dentro de assets/Fotos/
+// id     = nombre del archivo sin extensión
+// ext    = jpg | png (por defecto jpg)
+// =========================================================
+const CATALOG = {
+  'grid-comida': {
+    label: 'Comida & Publicidad',
+    folder: 'Comida_Publicidad',
+    files: ['1-13.jpg','1-18.jpg','1-25.jpg','1-30.jpg','1-47.jpg','1-5.jpg','1-52 1.jpg','1-55.jpg','1.jpg','13.jpg','_DSC2887.jpg','_DSC3118.jpg','_DSC7059.jpg','_DSC7070.jpg','_DSC8915.jpg','_DSC8923.jpg','_DSC8948.jpg','_DSC8961.jpg','_DSC8964.jpg','_DSC8965.jpg','a.jpg','b.jpg','con logo.jpg'],
+  },
+  'grid-ropa': {
+    label: 'Publicidad Ropa Deportiva',
+    folder: 'Publicidad_Ropa_Deportiva',
+    files: ['1-28.jpg','1-32.jpg','1-35.jpg','1-39.jpg','1-4.jpg','1-77.jpg','1-8.jpg','_JLP0909-7.jpg','_JLP0932-16.jpg','_JLP0935-17.jpg','_JLP0941-19.jpg','_JLP1057-65.jpg','_JLP1095-78.jpg','_JLP1100-81.jpg','_JLP1118-91.jpg','_JLP1252-139.jpg'],
+  },
+  'grid-bolsas': {
+    label: 'Moda & Bolsas',
+    folder: 'Publicidad_Moda_Bolsas',
+    files: ['_JLP0438.jpg','_JLP0491.jpg','_JLP0495.jpg','_JLP0542.jpg','_JLP0590.jpg','_JLP0596.jpg'],
+  },
+  'grid-pinup': {
+    label: 'Pin-up Vintage',
+    folder: 'Retratos_Pinup_Vintage',
+    files: ['1-80.jpg','_DSC7080.jpg','_DSC7839.jpg','_DSC7882.jpg','_DSC7932.jpg','_DSC7996.jpg','_DSC8012.jpg','_DSC9846.jpg','_DSC9847.jpg','_DSC9849.jpg','_DSC9872.jpg'],
+  },
+  'grid-moto': {
+    label: 'Retratos en Moto',
+    folder: 'Retratos_Moto',
+    files: ['_DSC4058.jpg','_DSC5172.jpg','_DSC5179.jpg','_DSC5184.jpg','_DSC5189.jpg','_DSC5197.jpg','_DSC5203.jpg','_DSC5208.jpg','_DSC5223.jpg'],
+  },
+  'grid-corp': {
+    label: 'Retratos Corporativos',
+    folder: 'Retratos_Corporativos',
+    files: ['_DSC9243.jpg','_DSC9249.jpg','_DSC9272.jpg','_DSC9276.jpg','_DSC9299 con logo.jpg','_DSC9306.jpg'],
+  },
+  'grid-otono': {
+    label: 'Otoño Vintage',
+    folder: 'Retratos_Otono_Vintage',
+    files: ['111.jpg','2.jpg','4.jpg','5.jpg','8.jpg','_DSC3161.jpg'],
+  },
+  'grid-desierto': {
+    label: 'Sombrilla & Desierto',
+    folder: 'Retratos_Sombrilla_Desierto',
+    files: ['_DSC5522-14.jpg','_DSC5525-16.jpg','_DSC5555-32.jpg','_DSC5564-40.jpg','_DSC5574-46.jpg'],
+  },
+  'grid-navidad': {
+    label: 'Sesión de Navidad',
+    folder: 'Sesion_Navidad',
+    files: ['_DSC6902.jpg','_DSC6905.jpg','_DSC6909.jpg','_DSC6932.jpg','_DSC6935.jpg','_DSC6946.jpg','_DSC6956.jpg','_DSC6964.jpg','_DSC6991.jpg','_DSC6992.jpg','_DSC6996.jpg'],
+  },
+  'grid-dj': {
+    label: 'Sesión DJ',
+    folder: 'Sesion_DJ',
+    files: ['_DSC8486.jpg','_DSC8507.jpg','_DSC8508.jpg','_DSC8517.jpg','_DSC8519.jpg','_DSC8529.jpg','_DSC8569.jpg','_DSC8590.jpg','_DSC8616.jpg','_DSC8617.jpg'],
+  },
+  'grid-hotel': {
+    label: 'Hotel María Bonita',
+    folder: 'Interiores_Hotel_MariaBonita',
+    files: ['_JLP0427-HDR.jpg','flor de geranio-2.jpg','flor de geranio-3.jpg','flor de geranio-4.jpg','flor de jazmin-2.jpg','flor de jazmin-3.jpg','flor de jazmin-4.jpg','flor de jazmin-5.jpg','flor de jazmin-8.jpg'],
+  },
+  'grid-xv': {
+    label: 'XV Años & Bodas',
+    folder: 'Eventos_XV_Bodas',
+    files: ['_DSC2152.jpg','_DSC2156.jpg','_DSC2163.jpg','_DSC2164.jpg','_DSC2167.jpg','_DSC2175.jpg','_DSC2192.jpg','_DSC2885.jpg'],
+  },
+  'grid-color': {
+    label: 'Carrera de Color',
+    folder: 'Evento_Carrera_Color',
+    files: ['1-118.jpg','1-130.jpg','1-135.jpg','1-2.jpg','1-3.jpg','1-52.jpg'],
+  },
+  'grid-terror': {
+    label: 'Cosplay Terror',
+    folder: 'Cosplay_Terror',
+    files: ['CHUN LI.jpg','_DSC3119.jpg','_DSC3131.jpg','_DSC3157.jpg','_DSC3799.jpg','_DSC4025.jpg','_DSC4027.jpg','_DSC4028.jpg'],
+  },
+  'grid-chunli': {
+    label: 'Cosplay Chun-Li',
+    folder: 'Cosplay_ChunLi',
+    files: ['_DSC6187 con logo.jpg','_DSC6203 con logo.jpg','_DSC6247 con logo.jpg','c.jpg','d.jpg','media.jpg'],
+  },
+};
+
+// Pool global de imágenes para el lightbox
+let lbImages = [];
+let lbIndex  = 0;
+
+// Construir grids
+Object.entries(CATALOG).forEach(([gridId, cat]) => {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+
+  cat.files.forEach((filename, i) => {
+    const src  = `assets/Fotos/${cat.folder}/${filename}`;
+    const item = document.createElement('div');
+    item.className    = 'photo-item reveal';
+    item.dataset.src  = src;
+    item.dataset.label = cat.label;
+
+    const img   = document.createElement('img');
+    img.src     = src;
+    img.alt     = `${cat.label} — ${filename.replace(/\.[^.]+$/, '')}`;
+    img.loading = 'lazy';
+    img.onerror = () => { item.style.display = 'none'; };
+
+    item.appendChild(img);
+    grid.appendChild(item);
+  });
+});
+
+// Reveal on scroll
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.photo-item').forEach(el => revealObs.observe(el));
+
+// =========================================================
+// LIGHTBOX
+// =========================================================
+const lb      = document.getElementById('lightbox');
+const lbImg   = document.getElementById('lbImg');
+const lbCap   = document.getElementById('lbCaption');
+const lbCount = document.getElementById('lbCounter');
+
+function openLightbox(items, index) {
+  lbImages = items;
+  showLb(index);
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function showLb(i) {
+  lbIndex = ((i % lbImages.length) + lbImages.length) % lbImages.length;
+  lbImg.style.opacity = '0';
+  setTimeout(() => {
+    lbImg.src = lbImages[lbIndex].src;
+    lbCap.textContent = lbImages[lbIndex].label;
+    lbCount.textContent = `${lbIndex + 1} / ${lbImages.length}`;
+    lbImg.style.opacity = '1';
+  }, 120);
+}
+
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lbPrev').addEventListener('click', () => showLb(lbIndex - 1));
+document.getElementById('lbNext').addEventListener('click', () => showLb(lbIndex + 1));
+lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape')     closeLightbox();
+  if (e.key === 'ArrowLeft')  showLb(lbIndex - 1);
+  if (e.key === 'ArrowRight') showLb(lbIndex + 1);
+});
+
+// Conectar clicks en fotos
+document.querySelectorAll('.photo-grid').forEach(grid => {
+  const items = Array.from(grid.querySelectorAll('.photo-item'));
+  items.forEach((item, i) => {
+    item.addEventListener('click', () => {
+      const imgs = items
+        .filter(el => el.style.display !== 'none')
+        .map(el => ({ src: el.dataset.src, label: el.dataset.label }));
+      const clickedSrc = item.dataset.src;
+      const idx = imgs.findIndex(im => im.src === clickedSrc);
+      openLightbox(imgs, idx >= 0 ? idx : 0);
+    });
+  });
+});
+
+// =========================================================
+// FILTROS
+// =========================================================
+const filterBtns = document.querySelectorAll('.filter-btn');
+const sections   = document.querySelectorAll('.category-section');
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    sections.forEach(sec => {
+      const tags = sec.dataset.tags || '';
+      sec.classList.toggle('hidden', f !== 'all' && !tags.includes(f));
+    });
+  });
+});
+</script>
+</body>
+</html>
