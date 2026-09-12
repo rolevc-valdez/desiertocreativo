@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificación de edad — Desierto Creativo</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/logo-transparente.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,500&family=Jost:wght@300;400;500;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a0a;
+    padding: 24px;
+  }
+
+  .age-gate {
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .age-gate-logo {
+    height: 70px;
+    margin: 0 auto 40px;
+    opacity: 0.9;
+  }
+
+  .age-gate-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    opacity: 0.6;
+    display: block;
+  }
+
+  .age-gate-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 500;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+
+  .age-gate-subtitle {
+    font-family: var(--font-caps);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #c0392b;
+    margin: 0 0 36px;
+  }
+
+  .disclaimer-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    padding: 28px 32px;
+    text-align: left;
+    margin-bottom: 32px;
+  }
+
+  .disclaimer-text {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--ink-dim);
+    line-height: 1.75;
+    margin: 0 0 20px;
+  }
+  .disclaimer-text:last-of-type { margin-bottom: 0; }
+
+  .disclaimer-text strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer;
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 2px;
+    background: transparent;
+    cursor: pointer;
+    margin-top: 2px;
+    position: relative;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .checkbox-row input[type="checkbox"]:checked {
+    background: #c0392b;
+    border-color: #c0392b;
+  }
+  .checkbox-row input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .checkbox-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.5;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .age-gate-actions {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .btn-enter {
+    font-family: var(--font-caps);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 16px 32px;
+    border-radius: 2px;
+    border: none;
+    background: #c0392b;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .btn-enter.enabled {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .btn-enter.enabled:hover { background: #a93226; }
+
+  .btn-back {
+    font-family: var(--font-caps);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--ink-dim);
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-back:hover {
+    border-color: rgba(255,255,255,0.25);
+    color: var(--ink);
+  }
+
+  .age-gate-footer {
+    margin-top: 28px;
+    font-family: var(--font-caps);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px) {
+    .disclaimer-box { padding: 20px; }
+    body { align-items: flex-start; padding-top: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="age-gate">
+  <img src="assets/logo-transparente.png" alt="Desierto Creativo" class="age-gate-logo">
+
+  <span class="age-gate-icon">🔞</span>
+  <h1 class="age-gate-title">Contenido para adultos</h1>
+  <p class="age-gate-subtitle">Verificación de edad requerida</p>
+
+  <div class="disclaimer-box">
+    <p class="disclaimer-text">
+      La sección que deseas ver contiene <strong>fotografía artística para adultos</strong>,
+      incluyendo imágenes de desnudo artístico y/o contenido de naturaleza sensual,
+      producidas con fines exclusivamente fotográficos y artísticos por Desierto Creativo.
+    </p>
+    <p class="disclaimer-text">
+      Al continuar, <strong>declaras bajo tu propia responsabilidad</strong> que:
+    </p>
+    <p class="disclaimer-text">
+      • Tienes <strong>18 años de edad o más</strong>, o la mayoría de edad legal
+      en tu país o región de residencia.<br><br>
+      • Es legal en tu jurisdicción acceder a este tipo de contenido.<br><br>
+      • Accedes a este contenido de manera <strong>voluntaria y consciente</strong>,
+      sin coacción de ningún tipo.<br><br>
+      • Liberas a <strong>Desierto Creativo</strong>, a sus colaboradores y al titular
+      del sitio de toda responsabilidad derivada de tu decisión de acceder
+      a este material.
+    </p>
+    <p class="disclaimer-text">
+      Si eres menor de edad, si no deseas ver este tipo de contenido, o si las
+      leyes de tu región lo prohíben, <strong>no continúes</strong> y regresa
+      a la galería general.
+    </p>
+
+    <label class="checkbox-row" for="ageCheck">
+      <input type="checkbox" id="ageCheck">
+      <span class="checkbox-label">
+        Confirmo que tengo 18 años o más, que acepto los términos anteriores
+        y que asumo toda responsabilidad por mi decisión de acceder a este contenido.
+      </span>
+    </label>
+  </div>
+
+  <div class="age-gate-actions">
+    <button class="btn-enter" id="btnEnter" disabled>
+      Soy mayor de edad — Ver contenido
+    </button>
+    <a class="btn-back" href="https://www.desiertocreativo.com/fotos">
+      ← Regresar a la galería
+    </a>
+  </div>
+
+  <p class="age-gate-footer">
+    Desierto Creativo · Agua Prieta, Sonora, México<br>
+    Este aviso cumple con las buenas prácticas de acceso responsable a contenido adulto.
+  </p>
+</div>
+
+<script>
+document.documentElement.classList.remove('no-js');
+
+const checkbox = document.getElementById('ageCheck');
+const btnEnter = document.getElementById('btnEnter');
+
+// Activar/desactivar el botón según el checkbox
+checkbox.addEventListener('change', () => {
+  if (checkbox.checked) {
+    btnEnter.classList.add('enabled');
+    btnEnter.disabled = false;
+  } else {
+    btnEnter.classList.remove('enabled');
+    btnEnter.disabled = true;
+  }
+});
+
+// Al aceptar, guardar en sessionStorage y redirigir a la galería de adultos
+btnEnter.addEventListener('click', () => {
+  if (!checkbox.checked) return;
+  // Guardar verificación en sesión (dura hasta cerrar la pestaña)
+  sessionStorage.setItem('dc_age_verified', '1');
+  window.location.href = 'fotos-adultos.html';
+});
+</script>
+</body>
+</html>

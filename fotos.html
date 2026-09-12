@@ -44,6 +44,18 @@
 }
 .filter-btn:hover   { border-color: var(--teal); color: var(--teal); }
 .filter-btn.active  { background: var(--teal); border-color: var(--teal); color: var(--ink); }
+.filter-btn-adult {
+  background: #c0392b;
+  border-color: #c0392b;
+  color: white !important;
+  text-decoration: none;
+  display: inline-block;
+}
+.filter-btn-adult:hover {
+  background: #a93226;
+  border-color: #a93226;
+  color: white !important;
+}
 
 /* ── Sección de categoría ── */
 .category-section {
@@ -262,6 +274,7 @@
     <button class="filter-btn" data-filter="retratos">Retratos</button>
     <button class="filter-btn" data-filter="eventos">Eventos</button>
     <button class="filter-btn" data-filter="cosplay">Cosplay</button>
+    <a href="age-gate.html" class="filter-btn filter-btn-adult">🔞 Adultos</a>
   </div>
 
   <!-- ── Categorías ── -->
