@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <style>
 .page-hero {
-  padding: 160px 24px 48px;
+  padding: 200px 24px 48px;
   max-width: 1120px;
   margin: 0 auto;
 }
@@ -28,7 +28,8 @@
   background: #c0392b;
   padding: 6px 14px;
   border-radius: 2px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  margin-top: 16px;
 }
 .photo-grid {
   columns: 4 220px;
@@ -248,11 +249,11 @@ if (!verified) {
 // Agrega los archivos reales de assets/Fotos/ADULTOS/
 // =========================================================
 function buildGallery() {
-  const ADULTOS_FILES = [
-    // Ejemplo — reemplaza con los nombres reales de tus archivos:
-    // 'adultos_001.jpg', 'adultos_002.jpg', ...
-    // Por ahora vacío — agrégalos cuando tengas los archivos listos
-  ];
+  // Fotos de assets/Fotos/ADULTOS/ — renombradas por Claude Code
+  // Actualiza el número en el Array.from según total de fotos confirmadas
+  const ADULTOS_FILES = Array.from({length: 1}, (_, i) =>
+    `adultos_${String(i + 1).padStart(3, '0')}.jpg`
+  ).filter(() => false); // vacío hasta confirmar la lista real
 
   const grid = document.getElementById('adultGrid');
 
