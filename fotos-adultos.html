@@ -249,11 +249,10 @@ if (!verified) {
 // Agrega los archivos reales de assets/Fotos/ADULTOS/
 // =========================================================
 function buildGallery() {
-  // Fotos de assets/Fotos/ADULTOS/ — renombradas por Claude Code
-  // Actualiza el número en el Array.from según total de fotos confirmadas
-  const ADULTOS_FILES = Array.from({length: 1}, (_, i) =>
-    `adultos_${String(i + 1).padStart(3, '0')}.jpg`
-  ).filter(() => false); // vacío hasta confirmar la lista real
+  const ADULTOS_FILES = [
+    'adultos_001.jpg','adultos_002.jpg','adultos_003.jpg',
+    'adultos_004.jpg','adultos_005.jpg','adultos_006.jpg',
+  ];
 
   const grid = document.getElementById('adultGrid');
 
